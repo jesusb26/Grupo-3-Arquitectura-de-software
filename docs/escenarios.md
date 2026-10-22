@@ -96,8 +96,7 @@ SLA de pagos como parte de lo que no se puede romper.
   pasajeras de red se resuelven solas, sin que el cliente note nada. Cobra: latencia en el peor
   caso — cada intento suma tiempo al total.
 
-**Choque declarado:** el mismo choque de la diapositiva 19 del PDF, aplicado aquí: tres intentos
-de 2 s más esperas de backoff pueden sumar más de 7 s, y el escenario exige ≤3 s. La salida es la
+**Choque declarado:** tres intentos de 2 s más esperas de backoff pueden sumar más de 7 s, y el escenario exige ≤3 s. La salida es la
 misma que se enseñó: timeout corto (1 s) y un solo reintento, dejando el peor caso en ~2,4 s; si
 ni así responde, el pedido pasa a «pago fallido» en vez de seguir esperando.
 
@@ -115,8 +114,7 @@ ni así responde, el pedido pasa a «pago fallido» en vez de seguir esperando.
 
 **Choque declarado:** limitar vueltas y tokens para controlar el costo por conversación puede
 chocar con dar una respuesta completa y bien fundamentada a una pregunta larga del cliente. El
-techo de vueltas no es un número arbitrario: sale del margen por pedido, igual que en la
-diapositiva 35 del PDF.
+techo de vueltas no es un número arbitrario: sale del margen por pedido.
 
 ## Paso 5 — Cómo se comprueba (fitness function)
 
