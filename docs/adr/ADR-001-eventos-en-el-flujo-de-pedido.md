@@ -1,6 +1,6 @@
 # ADR-001: La confirmación del comercio, la asignación de repartidor y el aviso al cliente van por evento
 
-Estado: borrador
+Estado: Aceptado
 
 ## Decisión
 

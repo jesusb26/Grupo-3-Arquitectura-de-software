@@ -1,5 +1,5 @@
 # ADR-000 — Visión y atributos de calidad rectores de la plataforma de domicilios
-- **Estado:** Propuesto
+- **Estado:** Aceptado
 
 ## Problema de negocio
 

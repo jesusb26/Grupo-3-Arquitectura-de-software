@@ -16,9 +16,13 @@ workspace "Domicilios locales" {
         }
 
         pasarela = softwareSystem "Pasarela de pagos" "Externo, cobra en linea" "External"
+        proveedorLLM = softwareSystem "Proveedor del modelo de lenguaje" "Externo. Interpreta el texto libre del pedido y propone un carrito (ADR-002)" "External"
 
         cliente -> appCliente "Arma y confirma el pedido"
-        appCliente -> api "Crea el pedido" "HTTPS" "Synchronous"
+        appCliente -> api "Envia texto libre del pedido para interpretar" "HTTPS" "Synchronous"
+        api -> db "Lee menu del comercio y ultimo pedido del cliente" "SQL" "Synchronous"
+        api -> proveedorLLM "Texto + menu del comercio; recibe carrito propuesto" "HTTPS, sincrono, timeout 4 s, sin reintento" "Synchronous"
+        appCliente -> api "Crea el pedido (carrito confirmado por el cliente)" "HTTPS" "Synchronous"
         api -> db "Guarda el pedido" "SQL" "Synchronous"
         api -> pasarela "Cobra (si es en linea)" "HTTPS, con timeout" "Synchronous"
 
