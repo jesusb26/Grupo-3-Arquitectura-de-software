@@ -48,3 +48,19 @@ flowchart LR
 
 Los dos módulos comparten las conexiones de la base de datos. Ese es el punto de presión que declara
 `vision.md`: una ráfaga de tracking podría degradar los pagos.
+
+## Cómo se reproduce la falla
+
+La falla es el pico: `npm test` aplica 80 eventos/s sobre una base de datos simulada que atiende ~66
+consultas/s (4 conexiones a 60 ms, supuesto del grupo). Cada posición ocupa una conexión antes de
+retransmitirse, así que la cola crece y también retrasa al cobro. `npm run escenario:sin-pico` ejecuta
+el mismo código con 8 eventos/s como control.
+
+## Medición antes de la táctica
+
+| Ejecución | Eventos/s | p95 retransmisión | p95 cobro | Pérdida | Resultado |
+|---|---|---|---|---|---|
+| `npm test` | 80 | 10.336 ms | 18.267 ms | 0 % | Falla |
+| `npm run escenario:sin-pico` | 8 | 85 ms | 335 ms | 0 % | Pasa |
+
+La pérdida es 0 % porque ningún evento se descarta: todos llegan, pero tarde.
