@@ -29,7 +29,8 @@ tarda entre 30 y 45 s.
 - [ADR-001](docs/adr/ADR-001-eventos-en-el-flujo-de-pedido.md): eventos en el flujo del pedido
 - [ADR-002](docs/adr/ADR-002-pedido-desde-texto-libre-con-modelo.md): modelo de lenguaje y secuencia de su falla
 - [ADR-003](docs/adr/ADR-003-escritura-diferida-del-tracking-gps.md): táctica aplicada y costo
-- [Vista de contenedores](docs/contenedores.dsl) e [imagen](docs/img/Contenedores.png)
+- [Vista de contenedores](docs/contenedores.dsl) e [imagen](docs/img/Contenedores.png): el camino del escenario
+  está identificado con las flechas en rojo
 
 ## Video de sustentación
 
