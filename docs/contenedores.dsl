@@ -42,6 +42,12 @@ workspace "Domicilios locales" {
         asignacion -> broker "Publica RepartidorAsignado" "AMQP" "Asynchronous"
         broker -> notificador "Entrega el evento" "AMQP" "Asynchronous"
         notificador -> appCliente "Avisa que hay repartidor asignado" "push" "Asynchronous"
+
+        // Camino del escenario de calidad: rastreo GPS en el pico (docs/escenario-calidad.md)
+        appRepartidor -> api "Reporta posicion GPS cada 5 s (~80 eventos/s en el pico)" "HTTPS" "Synchronous"
+        api -> db "Guarda la posicion del repartidor" "SQL" "Synchronous"
+        api -> broker "Publica UbicacionActualizada" "AMQP" "Asynchronous"
+        broker -> appCliente "Retransmite la posicion a los clientes suscritos" "AMQP" "Asynchronous"
     }
 
     views {
