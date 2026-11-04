@@ -45,7 +45,7 @@ workspace "Domicilios locales" {
 
         // Camino del escenario de calidad: rastreo GPS en el pico (docs/escenario-calidad.md)
         appRepartidor -> api "Reporta posicion GPS cada 5 s (~80 eventos/s en el pico)" "HTTPS" "Synchronous"
-        api -> db "Guarda la posicion del repartidor" "SQL" "Synchronous"
+        api -> db "Guarda en lote cada 5 s la ultima posicion de cada repartidor (ADR-003)" "SQL" "Asynchronous"
         api -> broker "Publica UbicacionActualizada" "AMQP" "Asynchronous"
         broker -> appCliente "Retransmite la posicion a los clientes suscritos" "AMQP" "Asynchronous"
     }

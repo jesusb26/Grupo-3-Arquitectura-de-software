@@ -39,7 +39,7 @@ flowchart LR
         T[Módulo de tracking]
         P[Módulo de pagos]
     end
-    T -- "Guarda la posición, SQL" --> DB[(Base de datos)]
+    T -- "Lote cada 5 s con la última posición, SQL (ADR-003)" --> DB[(Base de datos)]
     P -- "Lee y actualiza el pedido, SQL" --> DB
     P -- "Cobra, HTTPS" --> PS[Pasarela de pagos]
     T -- "UbicacionActualizada, AMQP" --> B[Broker de eventos]
@@ -51,16 +51,19 @@ Los dos módulos comparten las conexiones de la base de datos. Ese es el punto d
 
 ## Cómo se reproduce la falla
 
-La falla es el pico: `npm test` aplica 80 eventos/s sobre una base de datos simulada que atiende ~66
-consultas/s (4 conexiones a 60 ms, supuesto del grupo). Cada posición ocupa una conexión antes de
-retransmitirse, así que la cola crece y también retrasa al cobro. `npm run escenario:sin-pico` ejecuta
-el mismo código con 8 eventos/s como control.
+La falla es el pico: `npm run escenario:sin-tactica` aplica 80 eventos/s sobre una base de datos simulada
+que atiende ~66 consultas/s (4 conexiones a 60 ms, supuesto del grupo). Cada posición ocupa una conexión
+antes de retransmitirse, así que la cola crece y también retrasa al cobro. `npm run escenario:sin-pico`
+ejecuta ese mismo código con 8 eventos/s como control, y `npm test` aplica el pico con la táctica del
+ADR-003.
 
-## Medición antes de la táctica
+## Medición
 
-| Ejecución | Eventos/s | p95 retransmisión | p95 cobro | Pérdida | Resultado |
-|---|---|---|---|---|---|
-| `npm test` | 80 | 10.336 ms | 18.267 ms | 0 % | Falla |
-| `npm run escenario:sin-pico` | 8 | 85 ms | 335 ms | 0 % | Pasa |
+| Comando | Táctica | Eventos/s | p95 retransmisión | p95 cobro | Pérdida | Resultado |
+|---|---|---|---|---|---|---|
+| `npm run escenario:sin-tactica` | No | 80 | 10.138 ms | 17.884 ms | 0 % | Falla |
+| `npm run escenario:sin-pico` | No | 8 | 86 ms | 351 ms | 0 % | Pasa |
+| `npm test` | Sí | 80 | 18 ms | 351 ms | 0 % | Pasa |
 
-La pérdida es 0 % porque ningún evento se descarta: todos llegan, pero tarde.
+Sin táctica, la pérdida es 0 % porque ningún evento se descarta: todos llegan, pero tarde. El costo de la
+táctica está en el ADR-003.
