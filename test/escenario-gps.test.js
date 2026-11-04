@@ -17,6 +17,8 @@ const CLIENTES_POR_REPARTIDOR = 5; // vision.md: ~2.000 clientes / 400 repartido
 const TASA_EVENTOS = Number(process.env.TASA_EVENTOS ?? 80); // 400 repartidores / 5 s
 const DURACION_S = Number(process.env.DURACION_S ?? 30); // Ventana comprimida del pico de 120 min
 const TASA_PAGOS = 1; // Sonda: 1 cobro/s para tener una muestra de p95 en la ventana
+const ESCRITURA_DIFERIDA = process.env.TACTICA !== 'off';
+const DB_CONEXIONES = Number(process.env.DB_CONEXIONES ?? 4); // Supuesto del grupo
 
 function p95(valores) {
   const ordenados = [...valores].sort((a, b) => a - b);
@@ -37,8 +39,12 @@ async function emitirDuranteLaVentana(tasa, duracionS, emitir) {
 }
 
 test('rastreo GPS en el pico: p95 ≤ 3 s, ≥ 80 eventos/s, pérdida ≤ 5 % y cobro p95 ≤ 2 s', { timeout: 300_000 }, async () => {
-  const baseDeDatos = crearBaseDeDatosSimulada();
-  const tracking = crearModuloTracking({ baseDeDatos, broker: crearBrokerSimulado() });
+  const baseDeDatos = crearBaseDeDatosSimulada({ conexiones: DB_CONEXIONES });
+  const tracking = crearModuloTracking({
+    baseDeDatos,
+    broker: crearBrokerSimulado(),
+    escrituraDiferida: ESCRITURA_DIFERIDA,
+  });
   const pagos = crearModuloPagos({ baseDeDatos, pasarela: crearPasarelaSimulada() });
 
   const latenciasTracking = [];
@@ -65,6 +71,7 @@ test('rastreo GPS en el pico: p95 ≤ 3 s, ≥ 80 eventos/s, pérdida ≤ 5 % y 
 
   // Se espera a que todo termine para medir la latencia real, aunque la cola siga atrasada.
   await Promise.all(pendientes);
+  await tracking.detener();
   await esperar(100);
 
   const esperadas = TASA_EVENTOS * DURACION_S * CLIENTES_POR_REPARTIDOR;
@@ -72,10 +79,15 @@ test('rastreo GPS en el pico: p95 ≤ 3 s, ≥ 80 eventos/s, pérdida ≤ 5 % y 
   const p95Tracking = p95(latenciasTracking);
   const p95Pago = p95(latenciasPago);
 
+  console.log(`Táctica: ${ESCRITURA_DIFERIDA ? 'escritura diferida' : 'sin táctica'}, ${DB_CONEXIONES} conexiones`);
   console.log(`Carga: ${TASA_EVENTOS} eventos/s durante ${DURACION_S} s (emitidos: ${tasaEmitida.toFixed(1)}/s)`);
   console.log(`p95 retransmisión: ${p95Tracking} ms (máximo ${P95_TRACKING_MS} ms)`);
   console.log(`p95 cobro: ${p95Pago} ms (máximo ${P95_PAGO_MS} ms)`);
   console.log(`Pérdida: ${(perdida * 100).toFixed(2)} % (máximo ${PERDIDA_MAXIMA * 100} %)`);
+  console.log(`Costo: hasta ${tracking.metricas.maxMsHastaGuardar} ms para guardar una posición`);
+  console.log(`Costo: hasta ${tracking.metricas.maxPendientes} posiciones solo en memoria`);
+  const { consultas, msOcupada } = baseDeDatos.estadisticas;
+  console.log(`Base de datos: ${consultas} consultas, ${(msOcupada / 1000).toFixed(1)} s de conexión ocupada`);
 
   const incumplidas = [];
   // Confirma que la carga se aplicó; el 1 % cubre la imprecisión de los temporizadores.

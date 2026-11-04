@@ -6,6 +6,7 @@
   "description": "Camino del escenario de rastreo GPS en el pico del almuerzo",
   "scripts": {
     "test": "node --test test/escenario-gps.test.js",
+    "escenario:sin-tactica": "node --env-file=test/sin-tactica.env --test test/escenario-gps.test.js",
     "escenario:sin-pico": "node --env-file=test/sin-pico.env --test test/escenario-gps.test.js"
   },
   "engines": {
