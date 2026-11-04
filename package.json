@@ -1,0 +1,14 @@
+{
+  "name": "domicilios-escenario-gps",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Camino del escenario de rastreo GPS en el pico del almuerzo",
+  "scripts": {
+    "test": "node --test test/escenario-gps.test.js",
+    "escenario:sin-pico": "node --env-file=test/sin-pico.env --test test/escenario-gps.test.js"
+  },
+  "engines": {
+    "node": ">=20.6"
+  }
+}
