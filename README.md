@@ -40,7 +40,7 @@ Enlace: **PENDIENTE**
 
 | Parte | Integrante |
 |---|---|
-| Escenario y camino en la vista de contenedores | **PENDIENTE** |
-| ADR-002 y proveedor del modelo en la vista | **PENDIENTE** |
-| Código y prueba del escenario | **PENDIENTE** |
-| Táctica, medición de costo y ADR-003 | **PENDIENTE** |
+| Escenario y camino en la vista de contenedores | **Jesús David Barrera Montes** |
+| ADR-002 y proveedor del modelo en la vista | **Jesús David Barrera Montes** |
+| Código y prueba del escenario | **Deisler Said Prado Ospina** |
+| Táctica, medición de costo y ADR-003 | **Deisler Said Prado Ospina** |
