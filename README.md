@@ -34,7 +34,7 @@ tarda entre 30 y 45 s.
 
 ## Video de sustentación
 
-Enlace: **PENDIENTE**
+Enlace: https://youtu.be/yZx7k6q6Fns
 
 ## Quién hizo qué
 
